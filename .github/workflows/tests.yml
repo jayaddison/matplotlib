@@ -417,15 +417,27 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'schedule' }}
         run: |
           if [[ "${{ runner.os }}" != 'macOS' ]]; then
-            lcov --rc lcov_branch_coverage=1 \
-              --capture \
-              --directory . \
-              --output-file coverage.info
-            lcov --rc lcov_branch_coverage=1 \
-              --output-file coverage.info \
-              --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
-            lcov --rc lcov_branch_coverage=1 \
-              --list coverage.info
+            if [[ "${{ matrix.os }}" != ubuntu-24.04 ]]; then
+              lcov --rc lcov_branch_coverage=1 \
+                --capture \
+                --directory . \
+                --output-file coverage.info
+              lcov --rc lcov_branch_coverage=1 \
+                --output-file coverage.info \
+                --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
+              lcov --rc lcov_branch_coverage=1 \
+                --list coverage.info
+            else  # ubuntu-24.04
+              lcov --branch_coverage \
+                --capture \
+                --directory . \
+                --output-file coverage.info
+              lcov --branch-coverage \
+                --output-file coverage.info \
+                --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
+              lcov --branch-coverage \
+                --list coverage.info
+            fi
             find . -name '*.gc*' -delete
           else
             xcrun llvm-profdata merge -sparse default.*.profraw \
