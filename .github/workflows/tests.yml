@@ -426,16 +426,16 @@ jobs:
                 --list coverage.info
             else  # ubuntu-24.04
               lcov --branch-coverage \
-                --ignore-errors mismatch \
+                --ignore-errors 'mismatch,unused' \
                 --capture \
                 --directory . \
                 --output-file coverage.info
               lcov --branch-coverage \
-                --ignore-errors mismatch \
+                --ignore-errors 'mismatch,unused' \
                 --output-file coverage.info \
                 --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
               lcov --branch-coverage \
-                --ignore-errors mismatch \
+                --ignore-errors 'mismatch,unused' \
                 --list coverage.info
             fi
             find . -name '*.gc*' -delete
