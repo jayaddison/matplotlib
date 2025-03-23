@@ -417,11 +417,15 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'schedule' }}
         run: |
           if [[ "${{ runner.os }}" != 'macOS' ]]; then
-            lcov --rc lcov_branch_coverage=1 --capture --directory . \
+            lcov --rc geninfo_no_exception_branch=1 --rc lcov_branch_coverage=1 \
+              --capture \
+              --directory . \
               --output-file coverage.info
-            lcov --rc lcov_branch_coverage=1 --output-file coverage.info \
+            lcov --rc geninfo_no_exception_branch=1 --rc lcov_branch_coverage=1 \
+              --output-file coverage.info \
               --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
-            lcov --rc lcov_branch_coverage=1 --list coverage.info
+            lcov --rc geninfo_no_exception_branch=1 --rc lcov_branch_coverage=1 \
+              --list coverage.info
             find . -name '*.gc*' -delete
           else
             xcrun llvm-profdata merge -sparse default.*.profraw \
