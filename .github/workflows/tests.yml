@@ -418,7 +418,7 @@ jobs:
         run: |
           if [[ "${{ runner.os }}" != 'macOS' ]]; then
             LCOV_IGNORE_ERRORS='mismatch,unused'
-            if [[ "${{ matrix.os }}" = ubuntu-22.04 || "${{ matrix.os }}" = ubuntu-22.04-arm ]]; then
+            if [[ "${{ matrix.os }}" != ubuntu-24.04 ]]; then
               # lcov 1.x does not detect mismatch and unused-entity errors
               LCOV_IGNORE_ERRORS=','
             fi
