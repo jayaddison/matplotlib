@@ -417,30 +417,17 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'schedule' }}
         run: |
           if [[ "${{ runner.os }}" != 'macOS' ]]; then
-            if [[ "${{ matrix.os }}" != ubuntu-24.04 ]]; then
-              lcov --rc lcov_branch_coverage=1 \
-                --capture \
-                --directory . \
-                --output-file coverage.info
-              lcov --rc lcov_branch_coverage=1 \
-                --output-file coverage.info \
-                --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
-              lcov --rc lcov_branch_coverage=1 \
-                --list coverage.info
-            else  # ubuntu-24.04
-              lcov --branch-coverage \
-                --ignore-errors 'mismatch,unused' \
-                --capture \
-                --directory . \
-                --output-file coverage.info
-              lcov --branch-coverage \
-                --ignore-errors 'mismatch,unused' \
-                --output-file coverage.info \
-                --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
-              lcov --branch-coverage \
-                --ignore-errors 'mismatch,unused' \
-                --list coverage.info
+            LCOV_IGNORE_ERRORS='mismatch,unused'
+            if [[ "${{ matrix.os }}" = ubuntu-22.04 || "${{ matrix.os }}" = ubuntu-22.04-arm ]]; then
+              # lcov 1.x does not detect mismatch and unused-entity errors
+              LCOV_IGNORE_ERRORS=''
             fi
+            lcov --rc lcov_branch_coverage=1 --ignore-errors $LCOV_IGNORE_ERRORS \
+              --capture --directory . --output-file coverage.info
+            lcov --rc lcov_branch_coverage=1 --ignore-errors $LCOV_IGNORE_ERRORS \
+              --output-file coverage.info --extract coverage.info $PWD/src/'*' $PWD/lib/'*'
+            lcov --rc lcov_branch_coverage=1 --ignore-errors $LCOV_IGNORE_ERRORS \
+              --list coverage.info
             find . -name '*.gc*' -delete
           else
             xcrun llvm-profdata merge -sparse default.*.profraw \
