@@ -420,7 +420,7 @@ jobs:
             LCOV_IGNORE_ERRORS='mismatch,unused'
             if [[ "${{ matrix.os }}" = ubuntu-22.04 || "${{ matrix.os }}" = ubuntu-22.04-arm ]]; then
               # lcov 1.x does not detect mismatch and unused-entity errors
-              LCOV_IGNORE_ERRORS=''
+              LCOV_IGNORE_ERRORS=','
             fi
             lcov --rc lcov_branch_coverage=1 --ignore-errors $LCOV_IGNORE_ERRORS \
               --capture --directory . --output-file coverage.info
