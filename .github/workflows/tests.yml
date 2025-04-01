@@ -48,26 +48,17 @@ jobs:
       matrix:
         include:
           - name-suffix: "(Minimum Versions)"
-            os: ubuntu-20.04
-            python-version: '3.10'
+            os: ubuntu-22.04
+            python-version: '3.11'
             extra-requirements: '-c requirements/testing/minver.txt'
             delete-font-cache: true
-            # Oldest versions with Py3.10 wheels.
-            pyqt5-ver: '==5.15.5 sip==6.3.0'
-            pyqt6-ver: '==6.2.0 PyQt6-Qt6==6.2.0'
-            pyside2-ver: '==5.15.2.1'
-            pyside6-ver: '==6.2.0'
-          - os: ubuntu-20.04
-            python-version: '3.10'
-            extra-requirements: '-r requirements/testing/extra.txt'
-            CFLAGS: "-fno-lto"  # Ensure that disabling LTO works.
-            # https://github.com/matplotlib/matplotlib/pull/26052#issuecomment-1574595954
             # https://www.riverbankcomputing.com/pipermail/pyqt/2023-November/045606.html
-            pyqt6-ver: '!=6.5.1,!=6.6.0,!=6.7.1'
+            pyqt6-ver: '!=6.6.0'
             # https://bugreports.qt.io/projects/PYSIDE/issues/PYSIDE-2346
             pyside6-ver: '!=6.5.1'
           - os: ubuntu-22.04
             python-version: '3.11'
+            CFLAGS: "-fno-lto"  # Ensure that disabling LTO works.
             # https://www.riverbankcomputing.com/pipermail/pyqt/2023-November/045606.html
             pyqt6-ver: '!=6.6.0'
             # https://bugreports.qt.io/projects/PYSIDE/issues/PYSIDE-2346
@@ -123,15 +114,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38  # v5.4.0
-        if: matrix.python-version != '3.13t'
-        with:
-          python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: Quansight-Labs/setup-python@869aeafb7eeb9dc48ba68acc0479e6fc3fd7ce5e  # v5.4.0
-        if: matrix.python-version == '3.13t'
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55  # v5.5.0
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -183,11 +166,7 @@ jobs:
             if [[ "${{ matrix.name-suffix }}" != '(Minimum Versions)' ]]; then
               sudo apt-get install -yy --no-install-recommends ffmpeg poppler-utils
             fi
-            if [[ "${{ matrix.os }}" = ubuntu-20.04 ]]; then
-              sudo apt-get install -yy --no-install-recommends \
-                libgirepository1.0-dev \
-                libopengl0
-            elif [[ "${{ matrix.os }}" = ubuntu-22.04 || "${{ matrix.os }}" = ubuntu-22.04-arm ]]; then
+            if [[ "${{ matrix.os }}" = ubuntu-22.04 || "${{ matrix.os }}" = ubuntu-22.04-arm ]]; then
               sudo apt-get install -yy --no-install-recommends \
                 gir1.2-gtk-4.0 \
                 libgirepository1.0-dev
@@ -217,7 +196,7 @@ jobs:
           esac
 
       - name: Cache pip
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf  # v4.2.2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         if: startsWith(runner.os, 'Linux')
         with:
           path: ~/.cache/pip
@@ -225,7 +204,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-py${{ matrix.python-version }}-pip-
       - name: Cache pip
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf  # v4.2.2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         if: startsWith(runner.os, 'macOS')
         with:
           path: ~/Library/Caches/pip
@@ -233,7 +212,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-py${{ matrix.python-version }}-pip-
       - name: Cache ccache
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf  # v4.2.2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         with:
           path: |
             ~/.ccache
@@ -241,7 +220,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-py${{ matrix.python-version }}-ccache-
       - name: Cache Matplotlib
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf  # v4.2.2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         with:
           path: |
             ~/.cache/matplotlib
@@ -442,7 +421,7 @@ jobs:
           name: "${{ matrix.python-version }} ${{ matrix.os }} ${{ matrix.name-suffix }}"
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1  # v4.6.1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         if: failure()
         with:
           name: "${{ matrix.python-version }} ${{ matrix.os }} ${{ matrix.name-suffix }} result images"
